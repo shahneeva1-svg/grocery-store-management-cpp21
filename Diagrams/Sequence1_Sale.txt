@@ -1,0 +1,209 @@
+GROCERY STORE MANAGEMENT - SEQUENCE DIAGRAM 1: PROCESS SALE TRANSACTION
+=========================================================================
+
+ACTORS & OBJECTS:
+- Customer (user of system)
+- GroceryStore (main controller)
+- Customer Entity (customer database entry)
+- Product Entity (product database entry)
+- Inventory System (quantity management)
+- Sale Entity (transaction record)
+- FileManager (persistence layer)
+
+
+SEQUENCE FLOW:
+==============
+
+1. CUSTOMER INITIATES SALE:
+   
+   Customer
+      │
+      │ Request: Process Sale
+      ▼
+   ┌─────────────────────┐
+   │  GroceryStore Menu  │
+   │  (main.cpp)         │
+   └─────────────────────┘
+
+
+2. SYSTEM PROMPTS FOR INPUTS:
+
+   GroceryStore Menu
+      │
+      ├─► Prompt: Enter Customer ID
+      │
+      ├─► Prompt: Enter Product ID
+      │
+      └─► Prompt: Enter Quantity
+
+
+3. VALIDATE CUSTOMER EXISTS:
+
+   GroceryStore
+      │
+      ├─► searchCustomer(customerID)
+      │       │
+      │       ▼
+      │   ┌──────────────────────┐
+      │   │ Customer[] Array     │
+      │   │ Search by ID         │
+      │   └──────────────────────┘
+      │       │
+      │       ├─ Found: Return Customer*
+      │       └─ Not Found: Throw exception
+      │
+      ├─ Exception? → "Customer not found!"
+      └─ Valid? → Continue
+
+
+4. VALIDATE PRODUCT EXISTS:
+
+   GroceryStore
+      │
+      ├─► searchProduct(productID)
+      │       │
+      │       ▼
+      │   ┌──────────────────────┐
+      │   │ Product[] Array      │
+      │   │ Search by ID         │
+      │   └──────────────────────┘
+      │       │
+      │       ├─ Found: Return Product*
+      │       └─ Not Found: Throw exception
+      │
+      ├─ Exception? → "Product not found!"
+      └─ Valid? → Continue
+
+
+5. CHECK INVENTORY SUFFICIENCY:
+
+   GroceryStore → Product Entity
+      │
+      ├─► product.getQuantity() >= requestedQty?
+      │       │
+      │       ├─ YES: Continue
+      │       └─ NO: Throw "Insufficient inventory!"
+      │
+      └─ Valid? → Continue
+
+
+6. CREATE SALE RECORD:
+
+   GroceryStore
+      │
+      ├─► Create new Sale object
+      │   - Sale.customerID = input
+      │   - Sale.productID = input
+      │   - Sale.quantity = input
+      │   - Sale.totalAmount = (product.price × quantity)
+      │   - Sale.date = system date (YYYY-MM-DD)
+      │
+      └─ Sale created: (ID, date, amount)
+
+
+7. DEDUCT FROM INVENTORY:
+
+   GroceryStore → Product Entity
+      │
+      ├─► product.setQuantity(currentQty - soldQty)
+      │   Example: 100 units → 95 units (sold 5)
+      │
+      └─ Inventory updated
+
+
+8. UPDATE CUSTOMER SPENDING:
+
+   GroceryStore → Customer Entity
+      │
+      ├─► customer.addSpending(totalAmount)
+      │   Example: $200 → $350 (spent $150)
+      │
+      └─ Customer record updated
+
+
+9. RECORD SALE:
+
+   GroceryStore
+      │
+      ├─► Add Sale to sales[] array
+      │   sales[saleCount++] = newSale
+      │
+      └─ Sale logged
+
+
+10. AUTO-SAVE TO FILE:
+
+    GroceryStore
+       │
+       ├─► FileManager.saveProducts(products[], count)
+       │   (writes to products.txt CSV)
+       │
+       ├─► FileManager.saveCustomers(customers[], count)
+       │   (writes to customers.txt CSV)
+       │
+       ├─► FileManager.saveSales(sales[], count)
+       │   (writes to sales.txt CSV)
+       │
+       └─ Persistence complete
+
+
+11. RETURN SUCCESS:
+
+    GroceryStore
+       │
+       └─► "Sale processed successfully! Total: $150.00"
+
+
+COMPLETE SEQUENCE DIAGRAM (ASCII ART):
+
+┌─────────┐     ┌───────────────┐     ┌──────────────┐     ┌──────────────┐
+│Customer │     │ GroceryStore  │     │   Customer   │     │   Product    │
+│         │     │   (Controller)│     │   Entity     │     │   Entity     │
+└────┬────┘     └───────┬───────┘     └──────┬───────┘     └──────┬───────┘
+     │                  │                     │                   │
+     │─Process Sale────►│                     │                   │
+     │                  │                     │                   │
+     │     ◄─ID Prompts─┤                     │                   │
+     │                  │                     │                   │
+     │──Enter IDs──────►│                     │                   │
+     │                  │                     │                   │
+     │                  │─searchCustomer()───►│                   │
+     │                  │◄──Return/Exception─│                   │
+     │                  │                     │                   │
+     │                  │─searchProduct()────────────────────────►│
+     │                  │◄──Return/Exception────────────────────┤
+     │                  │                     │                   │
+     │                  │─Check Qty──────────────────────────────►│
+     │                  │◄──OK/Exception────────────────────────┤
+     │                  │                     │                   │
+     │                  │─Update Qty─────────────────────────────►│
+     │                  │◄──Confirmed────────────────────────────┤
+     │                  │                     │                   │
+     │                  │─Add Spending──────►│                   │
+     │                  │◄──Confirmed────────┤                   │
+     │                  │                     │                   │
+     │                  │────Save to File────────────────────────►
+     │                  │◄───Success─────────────────────────────┤
+     │                  │                     │                   │
+     │◄─Success Message─┤                     │                   │
+     │                  │                     │                   │
+
+
+CSV FILES UPDATED:
+==================
+
+products.txt:
+1,Widget,50.00,95
+2,Gadget,100.00,48
+...
+
+customers.txt:
+1,John Doe,350.00
+2,Jane Smith,500.00
+...
+
+sales.txt:
+1,1,1,5,250.00,2024-10-08
+2,2,2,2,200.00,2024-10-08
+...
+

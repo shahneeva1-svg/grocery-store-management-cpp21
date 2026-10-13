@@ -1,0 +1,266 @@
+GROCERY STORE MANAGEMENT - SEQUENCE DIAGRAM 2: UPDATE PRODUCT INFORMATION
+==========================================================================
+
+ACTORS & OBJECTS:
+- Store Manager (user of system)
+- GroceryStore (main controller)
+- Product Entity (product database entry)
+- FileManager (persistence layer)
+- Data File System (products.txt CSV)
+
+
+USE CASE: Update Product Price and/or Quantity
+===============================================
+
+SEQUENCE FLOW:
+
+1. STORE MANAGER SELECTS UPDATE:
+
+   Manager
+      │
+      │ Option 4: Update Product
+      ▼
+   ┌─────────────────────┐
+   │  GroceryStore Menu  │
+   │  (Product submenu)  │
+   └─────────────────────┘
+
+
+2. SYSTEM PROMPTS FOR PRODUCT ID:
+
+   GroceryStore Menu
+      │
+      └─► Prompt: "Enter Product ID to update:"
+             │
+             └─► Manager inputs: 1
+
+
+3. SEARCH FOR PRODUCT BY ID:
+
+   GroceryStore.updateProduct()
+      │
+      ├─► searchProduct(productID)
+      │       │
+      │       ▼
+      │   ┌──────────────────────────┐
+      │   │ Loop through Product[]   │
+      │   │ Find matching ID         │
+      │   └──────────────────────────┘
+      │       │
+      │       ├─ Found at index 0
+      │       │  Return Product* pointer
+      │       │
+      │       └─ Not Found
+      │          Return nullptr
+      │
+      └─ Validation check
+
+
+4. HANDLE NOT FOUND CASE:
+
+   GroceryStore
+      │
+      ├─ Product not found?
+      │     │
+      │     └─► Throw std::invalid_argument
+      │         Message: "Product ID not found!"
+      │
+      └─ Valid? → Continue to Step 5
+
+
+5. DISPLAY CURRENT PRODUCT INFO:
+
+   GroceryStore
+      │
+      ├─► Display current details:
+      │   ID: 1
+      │   Name: Widget
+      │   Price: $50.00
+      │   Quantity: 95 units
+      │
+      └─ User sees current state
+
+
+6. PROMPT FOR NEW VALUES:
+
+   GroceryStore Menu
+      │
+      ├─► Prompt: "Enter new price (or 0 to skip):"
+      │   Manager inputs: 55.50
+      │
+      ├─► Prompt: "Enter new quantity (or -1 to skip):"
+      │   Manager inputs: 100
+      │
+      └─ New values collected
+
+
+7. VALIDATE INPUT VALUES:
+
+   GroceryStore.updateProduct()
+      │
+      ├─► Validate price:
+      │   if (newPrice <= 0 AND newPrice != 0 [skip flag])
+      │       Throw std::invalid_argument: "Price must be positive!"
+      │
+      ├─► Validate quantity:
+      │   if (newQty < -1)
+      │       Throw std::invalid_argument: "Invalid quantity!"
+      │
+      └─ All validations pass
+
+
+8. UPDATE PRODUCT OBJECT:
+
+   GroceryStore → Product Entity
+      │
+      ├─ newPrice = 55.50
+      │   │
+      │   ├─► product.setPrice(55.50)
+      │   │       └─ Setter validates price > 0
+      │   │           └─ Set confirmed
+      │   │
+      │   └─ Price updated: $50.00 → $55.50
+      │
+      ├─ newQty = 100
+      │   │
+      │   ├─► product.setQuantity(100)
+      │   │       └─ Setter validates qty >= 0
+      │   │           └─ Set confirmed
+      │   │
+      │   └─ Quantity updated: 95 → 100
+      │
+      └─ Product state modified in memory
+
+
+9. DISPLAY UPDATED INFO:
+
+   GroceryStore
+      │
+      ├─► Show updated details:
+      │   ID: 1
+      │   Name: Widget
+      │   Price: $55.50 (changed)
+      │   Quantity: 100 units (changed)
+      │
+      └─ Confirmation displayed
+
+
+10. SAVE TO FILE:
+
+    GroceryStore
+       │
+       ├─► FileManager.saveProducts(products[], productCount)
+       │       │
+       │       ▼
+       │   ┌────────────────────────────┐
+       │   │ Open products.txt for write│
+       │   │ (CSV format)               │
+       │   └────────────────────────────┘
+       │       │
+       │       ├─ Write header: ID,Name,Price,Qty
+       │       │
+       │       ├─ Loop all products:
+       │       │  1,Widget,55.50,100
+       │       │  2,Gadget,100.00,48
+       │       │  3,Tool,25.00,200
+       │       │
+       │       ├─ Close file
+       │       │
+       │       └─ Verify file saved
+       │
+       └─ Persistence complete
+
+
+11. RETURN SUCCESS:
+
+    GroceryStore
+       │
+       └─► "Product updated successfully!"
+           "Changes saved to file."
+
+
+COMPLETE SEQUENCE DIAGRAM (ASCII ART):
+
+┌─────────────┐     ┌───────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Manager     │     │ GroceryStore  │     │   Product    │     │ FileManager  │
+│             │     │  (Controller) │     │   Entity     │     │  (I/O Layer) │
+└────┬────────┘     └───────┬───────┘     └──────┬───────┘     └──────┬───────┘
+     │                      │                     │                   │
+     │─Update Product──────►│                     │                   │
+     │                      │                     │                   │
+     │◄─ID Prompt──────────┤                     │                   │
+     │                      │                     │                   │
+     │──Enter ID───────────►│                     │                   │
+     │                      │                     │                   │
+     │                      │─searchProduct()────►│                   │
+     │                      │◄──Return Pointer────┤                   │
+     │                      │                     │                   │
+     │◄─Current Info───────┤                     │                   │
+     │                      │                     │                   │
+     │◄─Input Prompts──────┤                     │                   │
+     │                      │                     │                   │
+     │──New Values────────►│                     │                   │
+     │                      │─Validate────────────────────────────────┐
+     │                      │◄──OK──────────────────────────────────┤
+     │                      │                     │                   │
+     │                      │─setPrice()────────►│                   │
+     │                      │◄──Confirmed────────┤                   │
+     │                      │                     │                   │
+     │                      │─setQuantity()─────►│                   │
+     │                      │◄──Confirmed────────┤                   │
+     │                      │                     │                   │
+     │◄─Updated Info───────┤                     │                   │
+     │                      │                     │                   │
+     │                      │─saveProducts()────────────────────────►│
+     │                      │◄──File Saved──────────────────────────┤
+     │                      │                     │                   │
+     │◄─Success Message────┤                     │                   │
+     │                      │                     │                   │
+
+
+BEFORE & AFTER:
+
+BEFORE Update:
+┌────────────────────────────────────┐
+│ Product ID: 1                      │
+│ Name: Widget                       │
+│ Price: $50.00                      │
+│ Quantity: 95 units                 │
+└────────────────────────────────────┘
+
+AFTER Update:
+┌────────────────────────────────────┐
+│ Product ID: 1                      │
+│ Name: Widget                       │
+│ Price: $55.50 (↑ 10% increase)     │
+│ Quantity: 100 units (↑ 5 units)    │
+└────────────────────────────────────┘
+
+
+ERROR HANDLING SCENARIOS:
+=========================
+
+Scenario A: Product Not Found
+   Input: Product ID = 999
+   Flow: searchProduct(999) → nullptr → throw exception
+   Output: "Product ID not found!"
+   Action: Return to menu
+
+Scenario B: Invalid Price Input
+   Input: New Price = -10
+   Flow: Validate → Price < 0 → throw exception
+   Output: "Price must be positive!"
+   Action: Prompt again
+
+Scenario C: Invalid Quantity Input
+   Input: New Quantity = -5
+   Flow: Validate → Qty < 0 → throw exception
+   Output: "Quantity cannot be negative!"
+   Action: Prompt again
+
+Scenario D: File I/O Error
+   Input: Disk full or permission denied
+   Flow: saveProducts() → file open fails → exception
+   Output: "Error saving to file!"
+   Action: Data updated in memory but not persisted
+

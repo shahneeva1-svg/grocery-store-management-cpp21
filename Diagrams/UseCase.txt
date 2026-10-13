@@ -1,0 +1,98 @@
+GROCERY STORE MANAGEMENT - USE CASE DIAGRAM
+============================================
+
+ACTORS:
+- Customer
+- Store Manager
+- System Administrator
+
+USE CASES:
+
+1. View Products Inventory
+   Actor: Customer, Store Manager
+   Description: Display all products with details (ID, name, price, quantity)
+   
+2. Add Product to Inventory
+   Actor: Store Manager
+   Description: Add new product with name, price, quantity
+   Precondition: Store Manager logged in
+   
+3. Search Product by ID
+   Actor: Customer, Store Manager
+   Description: Find product by ID and display details
+   
+4. Update Product Information
+   Actor: Store Manager
+   Description: Modify product details (price, quantity)
+   Precondition: Product exists
+   
+5. Delete Product from System
+   Actor: Store Manager
+   Description: Remove product from inventory
+   Precondition: Product exists and has zero quantity
+   
+6. Add Customer to System
+   Actor: Store Manager
+   Description: Register new customer with ID, name
+   
+7. View Customer Details
+   Actor: Store Manager
+   Description: Display all customers and their spending records
+   
+8. Purchase/Process Sale
+   Actor: Customer
+   Description: Process transaction (select customer, product, quantity)
+   Precondition: Product inventory >= quantity requested
+   Postcondition: Inventory decremented, sale recorded, customer spending updated
+   
+9. Generate Sales Reports
+   Actor: Store Manager
+   Description: View all sales transactions with date and amount
+   
+10. Manage Suppliers
+    Actor: Store Manager
+    Description: Add, view, update supplier information
+    
+11. Generate Customer Spending Report
+    Actor: Store Manager
+    Description: Display customers sorted by spending
+    
+12. Save and Load Data
+    Actor: System Administrator
+    Description: Persist data to CSV files on exit/load on startup
+
+
+DIAGRAM (ASCII):
+
+        ┌─────────────┐
+        │  Customer   │
+        └──────┬──────┘
+               │
+         ┌─────┼─────┐
+         │     │     │
+         ▼     ▼     ▼
+    ┌─────────────────────────────────────────────────┐
+    │                                                 │
+    │    View Products    Purchase/Sale    Search    │
+    │                    Product                      │
+    │                                                 │
+    └─────────────────────────────────────────────────┘
+         │     │     │     │     │     │
+         └─────┼─────┴─────┼─────┴─────┘
+               │           │
+        ┌──────┴────┐  ┌───┴───────────┐
+        │ Store     │  │ System        │
+        │ Manager   │  │ Administrator │
+        └──────┬────┘  └───┬───────────┘
+               │           │
+         ┌─────┼───────────┼─────┐
+         │     │           │     │
+         ▼     ▼           ▼     ▼
+    ┌──────────────────────────────────────────────────────┐
+    │                                                      │
+    │  Add Product  Display  Update  Delete  Add Customer │
+    │  View Customers  Generate Reports  Manage Suppliers│
+    │  Save/Load Data  Search Products  Process Sales     │
+    │                                                      │
+    └──────────────────────────────────────────────────────┘
+

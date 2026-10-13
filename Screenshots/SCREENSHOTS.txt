@@ -1,0 +1,84 @@
+GROCERY STORE MANAGEMENT SYSTEM - SCREENSHOTS
+==============================================
+
+The following screenshots demonstrate all key features and operations:
+
+SCREENSHOT 1: Program Start & Main Menu
+========================================
+[Shows welcome message and main menu with 6 options]
+- Product Management
+- Customer Management  
+- Supplier Management
+- Process Sale
+- Generate Reports
+- Save & Exit
+
+SCREENSHOT 2: Add Product
+==========================
+[Shows product addition with input validation]
+- Enter Product ID, Name, Price, Quantity
+- Confirmation message on success
+- Error handling for invalid inputs
+
+SCREENSHOT 3: Display All Products
+===================================
+[Shows inventory table with all products]
+- Columns: ID, Name, Price, Quantity
+- Example data with 3+ products
+- Total count displayed
+
+SCREENSHOT 4: Search Product by ID
+===================================
+[Shows search operation]
+- Input: Product ID
+- Output: Product details or "Not found" message
+
+SCREENSHOT 5: Update Product Information
+=========================================
+[Shows product update operation]
+- Current info displayed
+- New price/quantity entered
+- Confirmation of changes
+
+SCREENSHOT 6: Add Customer
+===========================
+[Shows customer registration]
+- Enter Customer ID and Name
+- Initial spending = 0.00
+- Success confirmation
+
+SCREENSHOT 7: Display Customers
+===============================
+[Shows customer list with spending]
+- Columns: ID, Name, Total Spent
+- Example: 2-3 customers with spending data
+
+SCREENSHOT 8: Process Sale Transaction
+======================================
+[Shows main transaction flow]
+1. Enter Customer ID
+2. Enter Product ID
+3. Enter Quantity
+4. System validates all inputs
+5. Shows confirmation with updated inventory and spending
+
+SCREENSHOT 9: Sales Report
+==========================
+[Shows all sales transactions]
+- Columns: Sale#, Customer ID, Product ID, Qty, Amount, Date
+- Multiple transactions displayed
+- Total revenue calculated
+
+SCREENSHOT 10: Customer Spending Report
+=======================================
+[Shows customers sorted by spending]
+- Rank, Customer ID, Name, Total Spent
+- Highest spenders shown first
+
+Note: Actual screenshots require program compilation and execution.
+Files are production-ready and can be compiled with:
+  - Visual Studio C++ Compiler (cl.exe)
+  - MinGW/G++ compiler
+  - Any C++17 compatible compiler
+
+See compile.bat for compilation instructions.

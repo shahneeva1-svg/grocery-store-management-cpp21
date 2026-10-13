@@ -1,0 +1,174 @@
+GROCERY STORE MANAGEMENT - CLASS DIAGRAM
+========================================
+
+┌─────────────────────────────┐
+│        Product              │
+├─────────────────────────────┤
+│ - productID: int            │
+│ - name: string              │
+│ - price: float              │
+│ - quantity: int             │
+├─────────────────────────────┤
+│ + Product()                 │
+│ + ~Product()                │
+│ + getProductID(): int       │
+│ + setProductID(int): void   │
+│ + getName(): string         │
+│ + setName(string): void     │
+│ + getPrice(): float         │
+│ + setPrice(float): void     │
+│ + getQuantity(): int        │
+│ + setQuantity(int): void    │
+│ + display(): void           │
+└─────────────────────────────┘
+
+
+┌─────────────────────────────┐
+│       Customer              │
+├─────────────────────────────┤
+│ - customerID: int           │
+│ - name: string              │
+│ - totalSpent: float         │
+├─────────────────────────────┤
+│ + Customer()                │
+│ + ~Customer()               │
+│ + getCustomerID(): int      │
+│ + setCustomerID(int): void  │
+│ + getName(): string         │
+│ + setName(string): void     │
+│ + getTotalSpent(): float    │
+│ + setTotalSpent(float): void│
+│ + addSpending(float): void  │
+│ + display(): void           │
+└─────────────────────────────┘
+
+
+┌─────────────────────────────┐
+│       Supplier              │
+├─────────────────────────────┤
+│ - supplierID: int           │
+│ - name: string              │
+│ - phone: string             │
+│ - email: string             │
+├─────────────────────────────┤
+│ + Supplier()                │
+│ + ~Supplier()               │
+│ + getSupplierID(): int      │
+│ + setSupplierID(int): void  │
+│ + getName(): string         │
+│ + setName(string): void     │
+│ + getPhone(): string        │
+│ + setPhone(string): void    │
+│ + getEmail(): string        │
+│ + setEmail(string): void    │
+│ + display(): void           │
+└─────────────────────────────┘
+
+
+┌──────────────────────────────┐
+│          Sale                │
+├──────────────────────────────┤
+│ - saleID: int                │
+│ - customerID: int            │
+│ - productID: int             │
+│ - quantity: int              │
+│ - totalAmount: float         │
+│ - date: string (YYYY-MM-DD)  │
+├──────────────────────────────┤
+│ + Sale()                     │
+│ + ~Sale()                    │
+│ + getSaleID(): int           │
+│ + setSaleID(int): void       │
+│ + getCustomerID(): int       │
+│ + setCustomerID(int): void   │
+│ + getProductID(): int        │
+│ + setProductID(int): void    │
+│ + getQuantity(): int         │
+│ + setQuantity(int): void     │
+│ + getTotalAmount(): float    │
+│ + setTotalAmount(float): void│
+│ + getDate(): string          │
+│ + setDate(string): void      │
+│ + display(): void            │
+└──────────────────────────────┘
+
+
+┌────────────────────────────────────────────┐
+│        GroceryStore (Controller)           │
+├────────────────────────────────────────────┤
+│ - products: Product*                       │
+│ - customers: Customer*                     │
+│ - suppliers: Supplier*                     │
+│ - sales: Sale*                             │
+│ - productCount: int                        │
+│ - customerCount: int                       │
+│ - supplierCount: int                       │
+│ - saleCount: int                           │
+│ - maxCapacity: int                         │
+├────────────────────────────────────────────┤
+│ + GroceryStore()                           │
+│ + ~GroceryStore()                          │
+│ + addProduct(Product): void                │
+│ + displayProducts(): void                  │
+│ + searchProduct(int): Product*             │
+│ + updateProduct(int, float, int): void     │
+│ + deleteProduct(int): void                 │
+│ + addCustomer(Customer): void              │
+│ + displayCustomers(): void                 │
+│ + searchCustomer(int): Customer*           │
+│ + addSupplier(Supplier): void              │
+│ + displaySuppliers(): void                 │
+│ + searchSupplier(int): Supplier*           │
+│ + updateSupplier(int, string, string): void│
+│ + processSale(...): bool                   │
+│ + generateSalesReport(): void              │
+│ + generateCustomerReport(): void           │
+│ + generateSupplierReport(): void           │
+└────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────┐
+│       FileManager (Utility)         │
+├─────────────────────────────────────┤
+│ - (no data members)                 │
+├─────────────────────────────────────┤
+│ + saveProducts(...): void           │
+│ + loadProducts(...): void           │
+│ + saveCustomers(...): void          │
+│ + loadCustomers(...): void          │
+│ + saveSuppliersSuppliers(...): void │
+│ + loadSuppliers(...): void          │
+│ + saveSales(...): void              │
+│ + loadSales(...): void              │
+└─────────────────────────────────────┘
+
+
+RELATIONSHIPS:
+==============
+
+GroceryStore USES (composition):
+  - Product* (0..100 objects)
+  - Customer* (0..100 objects)
+  - Supplier* (0..100 objects)
+  - Sale* (0..100 objects)
+
+GroceryStore USES (association):
+  - FileManager (for persistent storage)
+
+Sale REFERENCES:
+  - customerID (foreign key to Customer)
+  - productID (foreign key to Product)
+
+GroceryStore USES:
+  - All 5 entity classes for CRUD operations
+
+
+DESIGN PATTERNS:
+================
+- Model: Product, Customer, Supplier, Sale (data entities)
+- Controller: GroceryStore (business logic)
+- Utility: FileManager (data persistence)
+- Dynamic Memory: Arrays allocated in constructors, deallocated in destructors
+- Encapsulation: All data members private, accessed via getters/setters
+- Validation: In setters (prices > 0, quantities >= 0, IDs > 0)
+

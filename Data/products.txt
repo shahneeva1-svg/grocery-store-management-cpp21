@@ -1,0 +1,3 @@
+1,Widget,50,100,Grocery
+2,Gadget,100,50,Electronics
+3,Tool,25,200,Household
